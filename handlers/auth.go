@@ -20,7 +20,7 @@ func HandlerAuth(UserRepository repositories.UserRepository) *handlerAuth {
 	return &handlerAuth{UserRepository}
 }
 
-func (h *handlerAuth) CreateAuth(w http.ResponseWriter, r *http.Request) {
+func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	request := new(usersdto.CreateUserRequest)

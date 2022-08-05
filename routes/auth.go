@@ -12,5 +12,5 @@ func AuthRoutes(r *mux.Router) {
 	userRepository := repositories.RepositoryUser(mysql.DB)
 	h := handlers.HandlerAuth(userRepository)
 
-	r.HandleFunc("/register", h.CreateAuth).Methods("POST")
+	r.HandleFunc("/register", h.Register).Methods("POST")
 }
