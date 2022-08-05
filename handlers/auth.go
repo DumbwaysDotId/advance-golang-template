@@ -6,7 +6,6 @@ import (
 	"dumbmerch/models"
 	"dumbmerch/pkg/bcrypt"
 	jwtToken "dumbmerch/pkg/jwt"
-	"dumbmerch/pkg/mysql"
 	"dumbmerch/repositories"
 	"encoding/json"
 	"fmt"
@@ -19,11 +18,11 @@ import (
 )
 
 type handlerAuth struct {
-	UserRepository repositories.UserRepository
+	AuthRepository repositories.AuthRepository
 }
 
-func HandlerAuth(UserRepository repositories.UserRepository) *handlerAuth {
-	return &handlerAuth{UserRepository}
+func HandlerAuth(AuthRepository repositories.AuthRepository) *handlerAuth {
+	return &handlerAuth{AuthRepository}
 }
 
 func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +58,7 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 		Password: password,
 	}
 
-	data, err := h.UserRepository.CreateUser(user)
+	data, err := h.AuthRepository.Register(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
@@ -71,7 +70,7 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func (h *handlerAuth) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	request := new(authdto.LoginRequest)
@@ -88,20 +87,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check email
-	err := mysql.DB.First(&user, "email = ?", user.Email).Error
-
+	// err := mysql.DB.First(&user, "email = ?", user.Email).Error
+	user, err := h.AuthRepository.Login(user.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := Result{Code: http.StatusBadRequest, Message: "wrong email or password"}
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
 	// Check password
-	isValid := password.CheckPasswordHash(newUser.Password, user.Password)
+	isValid := bcrypt.CheckPasswordHash(request.Password, user.Password)
 	if !isValid {
 		w.WriteHeader(http.StatusBadRequest)
-		response := Result{Code: http.StatusBadRequest, Message: "wrong email or password"}
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "wrong email or password"}
+		// response := Result{Code: http.StatusBadRequest, Message: "wrong email or password"}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -109,8 +109,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	//generate token
 	claims := jwt.MapClaims{}
 	claims["id"] = user.ID
-	// claims["email"] = user.Email
-	// claims["status"] = user.Status
 	claims["exp"] = time.Now().Add(time.Hour * 2).Unix() // 2 jam expired
 
 	token, errGenerateToken := jwtToken.GenerateToken(&claims)
@@ -120,14 +118,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := models.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+	loginResponse := authdto.LoginResponse{
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+		Token:    token,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	response := Result{Code: http.StatusOK, Message: "success", Data: map[string]interface{}{"user": result, "token": token}}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: loginResponse}
 	json.NewEncoder(w).Encode(response)
 
 }
