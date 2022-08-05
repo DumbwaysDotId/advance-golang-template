@@ -12,6 +12,6 @@ type Transaction struct {
 	Seller    UsersProfileResponse `json:"seller"`
 	Price     int                  `json:"price"`
 	Status    string               `json:"status"  gorm:"type:varchar(25)"`
-	CreatedAt time.Time            `json:"created_at"`
-	UpdatedAt time.Time            `json:"updated_at"`
+	CreatedAt time.Time            `json:"-"`
+	UpdatedAt time.Time            `json:"-"`
 }

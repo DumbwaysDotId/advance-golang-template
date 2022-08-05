@@ -9,8 +9,8 @@ type Profile struct {
 	Address   string               `json:"address" gorm:"type: text"`
 	UserID    int                  `json:"user_id"`
 	User      UsersProfileResponse `json:"user"`
-	CreatedAt time.Time            `json:"created_at"`
-	UpdatedAt time.Time            `json:"updated_at"`
+	CreatedAt time.Time            `json:"-"`
+	UpdatedAt time.Time            `json:"-"`
 }
 
 // for association relation with another table (user)
