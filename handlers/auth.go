@@ -13,11 +13,11 @@ import (
 )
 
 type handlerAuth struct {
-	UserRepository repositories.UserRepository
+	AuthRepository repositories.AuthRepository
 }
 
-func HandlerAuth(UserRepository repositories.UserRepository) *handlerAuth {
-	return &handlerAuth{UserRepository}
+func HandlerAuth(AuthRepository repositories.AuthRepository) *handlerAuth {
+	return &handlerAuth{AuthRepository}
 }
 
 func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +53,7 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 		Password: password,
 	}
 
-	data, err := h.UserRepository.CreateUser(user)
+	data, err := h.AuthRepository.Register(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
