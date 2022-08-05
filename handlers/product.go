@@ -64,12 +64,18 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userId := int(userInfo["id"].(float64))
 
-	request := new(productdto.ProductRequest)
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
+	dataContex := r.Context().Value("dataFile")
+	filename := dataContex.(string)
+
+	price, _ := strconv.Atoi(r.FormValue("price"))
+	qty, _ := strconv.Atoi(r.FormValue("qty"))
+	category_id, _ := strconv.Atoi(r.FormValue("category_id"))
+	request := productdto.ProductRequest{
+		Name:       r.FormValue("name"),
+		Desc:       r.FormValue("desc"),
+		Price:      price,
+		Qty:        qty,
+		CategoryID: category_id,
 	}
 
 	validation := validator.New()
@@ -85,7 +91,7 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		Name:   request.Name,
 		Desc:   request.Desc,
 		Price:  request.Price,
-		Image:  request.Image,
+		Image:  filename,
 		Qty:    request.Qty,
 		UserID: userId,
 	}
@@ -117,3 +123,7 @@ func convertResponseProduct(u models.Product) models.ProductResponse {
 		Category: u.Category,
 	}
 }
+
+// func (p *product) Modify() {
+
+// }
