@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	authdto "dumbmerch/dto/auth"
 	dto "dumbmerch/dto/result"
-	usersdto "dumbmerch/dto/users"
 	"dumbmerch/models"
 	"dumbmerch/pkg/bcrypt"
 	"dumbmerch/repositories"
@@ -23,7 +23,7 @@ func HandlerAuth(UserRepository repositories.UserRepository) *handlerAuth {
 func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(usersdto.CreateUserRequest)
+	request := new(authdto.RegisterRequest)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
