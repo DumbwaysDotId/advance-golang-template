@@ -13,8 +13,8 @@ type Product struct {
 	User       UsersProfileResponse `json:"user"`
 	Category   []Category           `json:"category" gorm:"many2many:product_categories"`
 	CategoryID []int                `json:"category_id" form:"category_id" gorm:"-"`
-	CreatedAt  time.Time            `json:"created_at"`
-	UpdatedAt  time.Time            `json:"updated_at"`
+	CreatedAt  time.Time            `json:"-"`
+	UpdatedAt  time.Time            `json:"-"`
 }
 
 type ProductResponse struct {
