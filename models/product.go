@@ -10,7 +10,7 @@ type Product struct {
 	Image      string               `json:"image" form:"image" gorm:"type: varchar(255)"`
 	Qty        int                  `json:"qty" form:"qty"`
 	UserID     int                  `json:"user_id" form:"user_id"`
-	User       UsersProfileResponse `json:"user"`
+	User       UsersProfileResponse `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Category   []Category           `json:"category" gorm:"many2many:product_categories"`
 	CategoryID []int                `json:"-" form:"category_id" gorm:"-"`
 	CreatedAt  time.Time            `json:"-"`
