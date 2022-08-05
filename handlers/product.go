@@ -123,7 +123,3 @@ func convertResponseProduct(u models.Product) models.ProductResponse {
 		Category: u.Category,
 	}
 }
-
-// func (p *product) Modify() {
-
-// }
