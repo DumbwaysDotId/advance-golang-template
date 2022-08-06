@@ -87,7 +87,6 @@ func (h *handlerAuth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check email
-	// err := mysql.DB.First(&user, "email = ?", user.Email).Error
 	user, err := h.AuthRepository.Login(user.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
