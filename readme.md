@@ -231,6 +231,8 @@
 
 - Inside `repositories` folder, create `repository.go` file, and write this below code
 
+  > File: `repositories/repository.go`
+
   ```go
   package repositories
 
