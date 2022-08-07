@@ -1,28 +1,22 @@
-> This section we will using Database to store data
+### Table of Contents
+
+- [GORM Relation belongs to](#database-preparation-for-relation)
+  - [Handlers](#handlers)
+  - [Repository](#repository)
+  - [Routes](#routes)
 
 ---
 
-# Prepare
+# GORM Relation Belongs to
 
-Installation:
+Reference: [Official GORM Website](https://gorm.io/docs/belongs_to.html)
 
-- Gorm
+## Handlers
 
-  ```bash
-  go get -u gorm.io/gorm
+- Inside `handlers` folder, create `profile.go` file, and write this below code
+
+  > File: `handlers/profile.go`
+
+  ```go
+
   ```
-
-- MySql
-  ```bash
-  go get -u gorm.io/driver/mysql
-  ```
-
-Database:
-
-- Create database named `dumbmerch`
-
-- Create `pkg` folder, inside it create `mysql` folder
-
-- Inside `mysql` folder, create `mysql.go` file
-
-# Fetching Query with Gorm
