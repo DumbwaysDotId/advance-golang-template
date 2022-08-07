@@ -13,7 +13,7 @@ Reference: [Official GORM Website](https://gorm.io/docs/has_one.html)
 
 For this section, example Has One relation:
 
-- User &rarr; Profile: to get User Profile
+- `User` &rarr; `Profile`: to get User Profile
 
 ## Repository
 
@@ -37,4 +37,4 @@ For this section, example Has One relation:
   }
   ```
 
-  \*In this case, just add Preload to make relation
+  \*In this case, just add `Preload` to make relation
