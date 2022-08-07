@@ -1,13 +1,13 @@
 ### Table of Contents
 
-- [GORM Relation belongs to](#database-preparation-for-relation)
+- [GORM Relation belongs to](#gorm-relation-has-one)
   - [Handlers](#handlers)
   - [Repository](#repository)
   - [Routes](#routes)
 
 ---
 
-# GORM Relation Belongs to
+# GORM Relation Has One
 
 Reference: [Official GORM Website](https://gorm.io/docs/belongs_to.html)
 
