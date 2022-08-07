@@ -267,7 +267,7 @@ Reference: [Official GORM Website](https://gorm.io/docs/belongs_to.html)
   }
   ```
 
-## Route
+## Routes
 
 - Inside `routes` folder, create `profile.go` file, and write this below code
 
