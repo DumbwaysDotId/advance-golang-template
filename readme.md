@@ -1,28 +1,58 @@
-> This section we will using Database to store data
+### Table of Contents
+
+- [Hashing Password](#hashing-password)
+  - [Intoduction](#intoduction)
+  - [Package](#Package)
+  - [Handler](#Handler)
+  - [Repository](#repository)
+  - [Routes](#routes)
 
 ---
 
-# Prepare
+# Hashing Password
 
-Installation:
+Reference: [Go Bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
 
-- Gorm
+## Intoduction
 
-  ```bash
-  go get -u gorm.io/gorm
+For this section, Hashing password if User doing Register New Account
+
+## Package
+
+- Inside `pkg` folder, create `bcrypt` folder, inside it create `hash_password.go` file, and write this below code
+
+  > File: `pkg/bcrypt/hash_password.go`
+
+  ```go
+
   ```
 
-- MySql
-  ```bash
-  go get -u gorm.io/driver/mysql
+## Handler
+
+- Inside `handlers` folder, create `auth.go` file and write this below code
+
+  > File: `handlers/auth.go`
+
+  ```go
+
   ```
 
-Database:
+## Repository
 
-- Create database named `dumbmerch`
+- Inside `repositories` folder, create `auth.go` file and write this below code
 
-- Create `pkg` folder, inside it create `mysql` folder
+  > File: `repositories/auth.go`
 
-- Inside `mysql` folder, create `mysql.go` file
+  ```go
 
-# Fetching Query with Gorm
+  ```
+
+## Routes
+
+- Inside `routes` folder, create `auth.go` file and write this below code
+
+  > File: `routes/auth.go`
+
+  ```go
+
+  ```
