@@ -1,13 +1,13 @@
 ### Table of Contents
 
-- [GORM Relation Has Many](#gorm-relation-has-many)
+- [GORM Relation Many to Many](#gorm-relation-has-many)
   - [Repository](#repository)
 
 ---
 
-# GORM Relation Has Many
+# GORM Relation Many to Many
 
-Reference: [Official GORM Website](https://gorm.io/docs/has_many.html)
+Reference: [Official GORM Website](https://gorm.io/docs/many_to_many.html)
 
 ## Relation
 
