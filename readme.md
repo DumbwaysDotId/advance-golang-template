@@ -15,7 +15,7 @@ Reference: [Official GORM Website](https://gorm.io/docs/belongs_to.html)
 
 For this section, example Belongs To relation:
 
-- `Profile` &rarr; `User`: to get Profile User or User Profile
+- `Profile` &rarr; `User`: to get Profile User
 - `Product` &rarr; `User`: to get Product Owner
 
 ## Handlers
