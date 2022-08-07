@@ -1,10 +1,10 @@
-# Table of Contents
+### Table of Contents
 
-- [Database Preparation for Relation](#)
-  - [Database Design](#)
-  - [Models](#)
-  - [Data Transfer Object (DTO)](#)
-  - [Split Modify for Connection](#)
+- [Database Preparation for Relation](#database-preparation-for-relation)
+  - [Database Design](#database-design)
+  - [Models](#models)
+  - [Data Transfer Object (DTO)](#data-transfer-object-dto)
+  - [Split Modify for Connection](#modify-repository)
 
 ---
 
