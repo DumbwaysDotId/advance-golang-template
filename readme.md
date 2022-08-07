@@ -1,7 +1,7 @@
 ### Table of Contents
 
 - [Hashing Password](#hashing-password)
-  - [Intoduction](#intoduction)
+  - [Introduction](#intoduction)
   - [Package](#Package)
   - [Handler](#Handler)
   - [Repository](#repository)
@@ -13,7 +13,7 @@
 
 Reference: [Go Bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
 
-## Intoduction
+## Introduction
 
 For this section, Hashing password if User doing Register New Account
 
