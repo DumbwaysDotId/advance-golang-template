@@ -296,7 +296,7 @@ For this section:
 
 - Inside `routes` folder, in `product.go` file and write `product` route with `middleware` like this below code
 
-  > File: `routes/auth.go`
+  > File: `routes/product.go`
 
   ```go
   package routes
