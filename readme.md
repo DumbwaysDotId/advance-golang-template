@@ -200,9 +200,9 @@ For this section, example Belongs To relation:
 
 ## Repository
 
-- Inside `handlers` folder, create `profile.go` file, and write this below code
+- Inside `repositories` folder, create `profile.go` file, and write this below code
 
-  > File: `handlers/profile.go`
+  > File: `repositories/profile.go`
 
   ```go
   package repositories
@@ -229,9 +229,9 @@ For this section, example Belongs To relation:
   }
   ```
 
-- Inside `handlers` folder, create `product.go` file, and write this below code
+- Inside `repositories` folder, create `product.go` file, and write this below code
 
-  > File: `handlers/product.go`
+  > File: `repositories/product.go`
 
   ```go
   package repositories
