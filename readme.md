@@ -1,241 +1,225 @@
 ### Table of Contents
 
-- [Authentication JWT](#authentication-jwt)
+- [Handle Upload File](#handle-upload-file)
   - [Introduction](#introduction)
-  - [Installation](#installation)
   - [Package](#Package)
   - [Handler](#Handler)
-  - [Repository](#repository)
   - [Routes](#routes)
 
 ---
 
-# Authentication JWT
-
-Reference: [Golang JWT](https://github.com/golang-jwt/jwt)
+# Handle Upload File
 
 ## Introduction
 
 For this section:
 
-- Generate Token using JWT if `User Login`
-- Verify Token and Get User Data if `Create Product Data`
-
-## Installation
-
-- Golang Json Web Token (JWT)
-
-  ```bash
-  go get -u github.com/golang-jwt/jwt/v4
-  ```
+- Handle File Upload for `Create Product` data
 
 ## Package
 
-- Inside `pkg` folder, create `jwt` folder, inside it create `jwt.go` file, and write this below code
+- Inside `pkg` folder, in `middleware` folder, inside it create `uploadFile.go` file, and write this below code
 
-  > File: `pkg/jwt/jwt.go`
-
-  ```go
-  package jwtToken
-
-  import (
-    "fmt"
-
-    "github.com/golang-jwt/jwt/v4"
-  )
-
-  var SecretKey = "SECRET_KEY"
-
-  func GenerateToken(claims *jwt.MapClaims) (string, error) {
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    webtoken, err := token.SignedString([]byte(SecretKey))
-    if err != nil {
-      return "", err
-    }
-
-    return webtoken, nil
-  }
-
-  func VerifyToken(tokenString string) (*jwt.Token, error) {
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-      if _, isValid := token.Method.(*jwt.SigningMethodHMAC); !isValid {
-        return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-      }
-      return []byte(SecretKey), nil
-    })
-
-    if err != nil {
-      return nil, err
-    }
-    return token, nil
-  }
-
-  func DecodeToken(tokenString string) (jwt.MapClaims, error) {
-    token, err := VerifyToken(tokenString)
-    if err != nil {
-      return nil, err
-    }
-
-    claims, isOk := token.Claims.(jwt.MapClaims)
-    if isOk && token.Valid {
-      return claims, nil
-    }
-
-    return nil, fmt.Errorf("invalid token")
-  }
-  ```
-
-- Inside `pkg` folder, create `middleware` folder, inside it create `auth.go` file, and write this below code
-
-  > File: `pkg/middleware/auth.go`
+  > File: `pkg/middleware/uploadFile.go`
 
   ```go
   package middleware
 
   import (
     "context"
-    dto "dumbmerch/dto/result"
-    jwtToken "dumbmerch/pkg/jwt"
     "encoding/json"
+    "fmt"
+    "io/ioutil"
     "net/http"
-    "strings"
   )
 
-  type Result struct {
-    Code    int         `json:"code"`
-    Data    interface{} `json:"data"`
-    Message string      `json:"message"`
-  }
-
-  func Auth(next http.HandlerFunc) http.HandlerFunc {
+  func UploadFile(next http.HandlerFunc) http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-      w.Header().Set("Content-Type", "application/json")
-
-      token := r.Header.Get("Authorization")
-
-      if token == "" {
-        w.WriteHeader(http.StatusUnauthorized)
-        response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized"}
-        json.NewEncoder(w).Encode(response)
-        return
-      }
-
-      token = strings.Split(token, " ")[1]
-      claims, err := jwtToken.DecodeToken(token)
+      // Upload file
+      // FormFile returns the first file for the given key `myFile`
+      // it also returns the FileHeader so we can get the Filename,
+      // the Header and the size of the file
+      file, _, err := r.FormFile("image")
 
       if err != nil {
-        w.WriteHeader(http.StatusUnauthorized)
-        response := Result{Code: http.StatusUnauthorized, Message: "unauthorized"}
+        fmt.Println(err)
+        json.NewEncoder(w).Encode("Error Retrieving the File")
+        return
+      }
+      defer file.Close()
+      // fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+      // fmt.Printf("File Size: %+v\n", handler.Size)
+      // fmt.Printf("MIME Header: %+v\n", handler.Header)
+      const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
+      // Parse our multipart form, 10 << 20 specifies a maximum
+      // upload of 10 MB files.
+      r.ParseMultipartForm(MAX_UPLOAD_SIZE)
+      if r.ContentLength > MAX_UPLOAD_SIZE {
+        w.WriteHeader(http.StatusBadRequest)
+        response := Result{Code: http.StatusBadRequest, Message: "Max size in 1mb"}
         json.NewEncoder(w).Encode(response)
         return
       }
 
-      ctx := context.WithValue(r.Context(), "userInfo", claims)
-      r = r.WithContext(ctx)
+      // Create a temporary file within our temp-images directory that follows
+      // a particular naming pattern
+      tempFile, err := ioutil.TempFile("uploads", "image-*.png")
+      if err != nil {
+        fmt.Println(err)
+        fmt.Println("path upload error")
+        json.NewEncoder(w).Encode(err)
+        return
+      }
+      defer tempFile.Close()
+
+      // read all of the contents of our uploaded file into a
+      // byte array
+      fileBytes, err := ioutil.ReadAll(file)
+      if err != nil {
+        fmt.Println(err)
+      }
+
+      // write this byte array to our temporary file
+      tempFile.Write(fileBytes)
+
+      data := tempFile.Name()
+      filename := data[8:] // split uploads/
+
+      // add filename to ctx
+      ctx := context.WithValue(r.Context(), "dataFile", filename)
       next.ServeHTTP(w, r.WithContext(ctx))
     })
   }
   ```
 
-## Handler
-
-- Inside `handlers` folder, On `auth.go` file and write `Login` Function like this below code
-
-  > File: `handlers/auth.go`
-
-  ```go
-  func (h *handlerAuth) Login(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-
-    request := new(authdto.LoginRequest)
-    if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-      w.WriteHeader(http.StatusBadRequest)
-      response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-      json.NewEncoder(w).Encode(response)
-      return
-    }
-
-    user := models.User{
-      Email:    request.Email,
-      Password: request.Password,
-    }
-
-    // Check email
-    user, err := h.AuthRepository.Login(user.Email)
-    if err != nil {
-      w.WriteHeader(http.StatusBadRequest)
-      response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-      json.NewEncoder(w).Encode(response)
-      return
-    }
-
-    // Check password
-    isValid := bcrypt.CheckPasswordHash(request.Password, user.Password)
-    if !isValid {
-      w.WriteHeader(http.StatusBadRequest)
-      response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "wrong email or password"}
-      json.NewEncoder(w).Encode(response)
-      return
-    }
-
-    //generate token
-    claims := jwt.MapClaims{}
-    claims["id"] = user.ID
-    claims["exp"] = time.Now().Add(time.Hour * 2).Unix() // 2 hours expired
-
-    token, errGenerateToken := jwtToken.GenerateToken(&claims)
-    if errGenerateToken != nil {
-      log.Println(errGenerateToken)
-      fmt.Println("Unauthorize")
-      return
-    }
-
-    loginResponse := authdto.LoginResponse{
-      Name:     user.Name,
-      Email:    user.Email,
-      Password: user.Password,
-      Token:    token,
-    }
-
-    w.Header().Set("Content-Type", "application/json")
-    response := dto.SuccessResult{Code: http.StatusOK, Data: loginResponse}
-    json.NewEncoder(w).Encode(response)
-
-  }
-  ```
-
-  - Inside `handlers` folder, On `product.go` file and write `CreateProduct` Function like this below code
-
-  > File: `handlers/product.go`
-
-  ```go
-
-  ```
-
-## Repository
-
-- Inside `repositories` folder, create `auth.go` file and write this below code
-
-  > File: `repositories/auth.go`
-
-  ```go
-
-  ```
-
 ## Routes
 
-- Inside `routes` folder, in `auth.go` file and write `Login` route this below code
-
-  > File: `routes/auth.go`
-
-  ```go
-
-  ```
-
-- Inside `routes` folder, in `product.go` file and write `product` route with `middleware` like this below code
+- In `routes` folder, inside `product.go` file, write `uploadFile` middleware on `/product` route
 
   > File: `routes/product.go`
 
   ```go
+  package routes
 
+  import (
+    "dumbmerch/handlers"
+    "dumbmerch/pkg/middleware"
+    "dumbmerch/pkg/mysql"
+    "dumbmerch/repositories"
+
+    "github.com/gorilla/mux"
+  )
+
+  func ProductRoutes(r *mux.Router) {
+    productRepository := repositories.RepositoryProduct(mysql.DB)
+    h := handlers.HandlerProduct(productRepository)
+
+    r.HandleFunc("/products", middleware.Auth(h.FindProducts)).Methods("GET")
+    r.HandleFunc("/product/{id}", h.GetProduct).Methods("GET")
+    r.HandleFunc("/product", middleware.Auth(middleware.UploadFile(h.CreateProduct))).Methods("POST") // add this code
+  }
+  ```
+
+## Handler
+
+- In `handlers` folder, inside `product.go` file, write get `filename` and store like this below code
+
+  > File: `handlers/product.go`
+
+  ```go
+  func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    // get data user token
+    userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+    userId := int(userInfo["id"].(float64))
+
+    dataContex := r.Context().Value("dataFile") // add this code
+    filename := dataContex.(string) // add this code
+
+    price, _ := strconv.Atoi(r.FormValue("price"))
+    qty, _ := strconv.Atoi(r.FormValue("qty"))
+    category_id, _ := strconv.Atoi(r.FormValue("category_id"))
+    request := productdto.ProductRequest{
+      Name:       r.FormValue("name"),
+      Desc:       r.FormValue("desc"),
+      Price:      price,
+      Qty:        qty,
+      CategoryID: category_id,
+    }
+
+    validation := validator.New()
+    err := validation.Struct(request)
+    if err != nil {
+      w.WriteHeader(http.StatusInternalServerError)
+      response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+      json.NewEncoder(w).Encode(response)
+      return
+    }
+
+    product := models.Product{
+      Name:   request.Name,
+      Desc:   request.Desc,
+      Price:  request.Price,
+      Image:  filename, // add this code
+      Qty:    request.Qty,
+      UserID: userId,
+    }
+
+    product, err = h.ProductRepository.CreateProduct(product)
+    if err != nil {
+      w.WriteHeader(http.StatusInternalServerError)
+      response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+      json.NewEncoder(w).Encode(response)
+      return
+    }
+
+    product, _ = h.ProductRepository.GetProduct(product.ID)
+
+    w.WriteHeader(http.StatusOK)
+    response := dto.SuccessResult{Code: http.StatusOK, Data: product}
+    json.NewEncoder(w).Encode(response)
+  }
+  ```
+
+## Folder Store File
+
+- Create `uploads` folder
+
+  > File: `./uploads`
+
+- Add this below code to make `uploads` can be used another client
+
+  > File: `main.go`
+
+  ```go
+  package main
+
+  import (
+    "dumbmerch/database"
+    "dumbmerch/pkg/mysql"
+    "dumbmerch/routes"
+    "fmt"
+    "net/http"
+
+    "github.com/gorilla/mux"
+  )
+
+  func main() {
+    // initial DB
+    mysql.DatabaseInit()
+
+    // run migration
+    database.RunMigration()
+
+    r := mux.NewRouter()
+
+    routes.RouteInit(r.PathPrefix("/api/v1").Subrouter())
+
+    //path file
+    r.PathPrefix("/uploads").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads")))) // add this code
+
+    fmt.Println("server running localhost:5000")
+    http.ListenAndServe("localhost:5000", r)
+  }
   ```
