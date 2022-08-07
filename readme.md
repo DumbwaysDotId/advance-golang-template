@@ -11,6 +11,12 @@
 
 Reference: [Official GORM Website](https://gorm.io/docs/belongs_to.html)
 
+## Relation
+
+For this section, example Belongs To relation:
+
+- User &rarr; Profile: to get User Profile
+
 ## Handlers
 
 - Inside `handlers` folder, create `profile.go` file, and write this below code
