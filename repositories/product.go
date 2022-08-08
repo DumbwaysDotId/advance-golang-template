@@ -18,15 +18,14 @@ func RepositoryProduct(db *gorm.DB) *repository {
 
 func (r *repository) FindProducts() ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Preload("User").Preload("Category").Find(&products).Error
+	// Using Preload("User") to find data with relation to User and Preload("Category") for relation to Category here ...
 
 	return products, err
 }
 
 func (r *repository) GetProduct(ID int) (models.Product, error) {
 	var product models.Product
-	// not yet using category relation, cause this step doesnt Belong to Many
-	err := r.db.Preload("User").Preload("Category").First(&product, ID).Error
+	// Using Preload("User") to find data with relation to User and Preload("Category") for relation to Category here ...
 
 	return product, err
 }
