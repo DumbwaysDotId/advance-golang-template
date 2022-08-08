@@ -1,16 +1,5 @@
 package routes
 
-import (
-	"dumbmerch/handlers"
-	"dumbmerch/pkg/mysql"
-	"dumbmerch/repositories"
+// Import the required packages here ...
 
-	"github.com/gorilla/mux"
-)
-
-func ProfileRoutes(r *mux.Router) {
-	profileRepository := repositories.RepositoryProfile(mysql.DB)
-	h := handlers.HandlerProfile(profileRepository)
-
-	r.HandleFunc("/profile/{id}", h.GetProfile).Methods("GET")
-}
+// Create ProfileRoutes function and add the route here ...
