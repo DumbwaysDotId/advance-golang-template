@@ -1,16 +1,5 @@
-package routes
+// Create package routes here ...
 
-import (
-	"dumbmerch/handlers"
-	"dumbmerch/pkg/mysql"
-	"dumbmerch/repositories"
+// import the required packages here ...
 
-	"github.com/gorilla/mux"
-)
-
-func AuthRoutes(r *mux.Router) {
-	userRepository := repositories.RepositoryUser(mysql.DB)
-	h := handlers.HandlerAuth(userRepository)
-
-	r.HandleFunc("/register", h.Register).Methods("POST")
-}
+// Create AuthRoutes function and add "/register" route with handler Register and POST method here ...

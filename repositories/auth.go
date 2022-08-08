@@ -1,21 +1,9 @@
-package repositories
+// Create package repositories here ...
 
-import (
-	"dumbmerch/models"
+// import the required packages here ... 
 
-	"gorm.io/gorm"
-)
+// AuthRepository interface here ...
 
-type AuthRepository interface {
-	Register(user models.User) (models.User, error)
-}
+// RepositoryAuth function here ...
 
-func RepositoryAuth(db *gorm.DB) *repository {
-	return &repository{db}
-}
-
-func (r *repository) Register(user models.User) (models.User, error) {
-	err := r.db.Create(&user).Error
-
-	return user, err
-}
+// Register method here ...
