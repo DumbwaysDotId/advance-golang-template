@@ -1,7 +1,5 @@
 package repositories
 
-import "gorm.io/gorm"
+// Iimport "gorm.io/gorm"
 
-type repository struct {
-	db *gorm.DB
-}
+// Declare repository struct here ...
