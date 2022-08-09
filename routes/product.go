@@ -15,5 +15,5 @@ func ProductRoutes(r *mux.Router) {
 
 	r.HandleFunc("/products", middleware.Auth(h.FindProducts)).Methods("GET")
 	r.HandleFunc("/product/{id}", h.GetProduct).Methods("GET")
-	r.HandleFunc("/product", middleware.Auth(h.CreateProduct)).Methods("POST")
+	// Create "/product" route using midleware Auth, handler CreateProduct, and method POST here ...
 }
