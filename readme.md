@@ -6,6 +6,7 @@
   - [Routes](#routes)
   - [Handler](#Handler)
   - [Folder Store File](#folder-store-file)
+  - [DotEnv](#dotenv)
 
 ---
 
@@ -183,6 +184,23 @@ For this section:
   }
   ```
 
+- Embed Path file in `FindProducts` and `GetProduct` method
+  > File: `handlers/product.go`
+  - Create `path_file` Global variable
+    ```go
+    var path_file = "http://localhost:5000/uploads/"
+    ```
+  - `FindProducts` method
+    ```go
+    for i, p := range products {
+      products[i].Image = path_file + p.Image
+    }
+    ```
+  - `GetProduct` method
+    ```go
+    product.Image = path_file + product.Image
+    ```
+
 ## Folder Store File
 
 - Create `uploads` folder
@@ -224,3 +242,62 @@ For this section:
     http.ListenAndServe("localhost:5000", r)
   }
   ```
+
+## DotEnv
+
+- Installation
+
+  ```bash
+  go get github.com/joho/godotenv
+  ```
+
+- Create `.env` file and write this below code
+
+  > File: `.env`
+
+  ```env
+  SECRET_KEY=bolehapaaja
+  ```
+
+- In `main.go` file import `godotenv` and Init `godotenv` inside `main` function like this below code
+
+  > File: `main.go`
+
+  - Import `godotenv` package
+    ```go
+    import (
+      // another package here ...
+      "github.com/joho/godotenv" // import this package
+    )
+    ```
+  - Init `godotenv`
+
+    ```go
+    func main() {
+
+      	// env
+        errEnv := godotenv.Load()
+        if errEnv != nil {
+          panic("Failed to load env file")
+        }
+
+        // Another code on this below ...
+    }
+    ```
+
+- How to use Environment Variable, write this below code inside `jwt.go` file
+
+  > File: `pkg/jwt/jwt.go`
+
+  - Import `os` package
+    ```go
+    import (
+      "fmt"
+      "os" // import this package
+      "github.com/golang-jwt/jwt/v4"
+    )
+    ```
+  - Modify `SecretKey` variable like this below code
+    ```go
+    var SecretKey = os.Getenv("SECRET_KEY")
+    ```

@@ -18,6 +18,8 @@ type handlerProduct struct {
 	ProductRepository repositories.ProductRepository
 }
 
+// Create `path_file` Global variable here ...
+
 func HandlerProduct(ProductRepository repositories.ProductRepository) *handlerProduct {
 	return &handlerProduct{ProductRepository}
 }
@@ -32,6 +34,8 @@ func (h *handlerProduct) FindProducts(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	// Create Embed Path File on Image property here ...
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: products}
@@ -52,6 +56,8 @@ func (h *handlerProduct) GetProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create Embed Path File on Image property here ...
+
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseProduct(product)}
 	json.NewEncoder(w).Encode(response)
@@ -64,8 +70,7 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userId := int(userInfo["id"].(float64))
 
-	dataContex := r.Context().Value("dataFile")
-	filename := dataContex.(string)
+	// Get dataFile from midleware and store to filename variable here ...
 
 	price, _ := strconv.Atoi(r.FormValue("price"))
 	qty, _ := strconv.Atoi(r.FormValue("qty"))
